@@ -9,17 +9,20 @@ const jsonParser = bodyParser.json();
 
 app.post("/midpoint", jsonParser, (req, res) => {
   console.log(req.body);
-  calculator.calculateMidpoint(req.body.fx, req.body.a, req.body.b, req.body.n);
+  const solution = calculator.calculateMidpoint(req.body.fx, parseFloat(req.body.a), parseFloat(req.body.b), parseInt(req.body.n));
+  res.send({ solution: solution });
 });
 
 app.post("/trapezoid", jsonParser, (req, res) => {
   console.log(req.body);
-  calculator.calculateTrapezoid(req.body.fx, 0, 0, 0)
+  const solution = calculator.calculateTrapezoid(req.body.fx, parseFloat(req.body.a), parseFloat(req.body.b), parseInt(req.body.n));
+  res.send({ solution: solution });
 });
 
 app.post("/simpson", jsonParser, (req, res) => {
   console.log(req.body);
-  calculator.calculateSimpson(req.body.fx, 0, 0, 0)
+  const solution = calculator.calculateSimpson(req.body.fx, parseFloat(req.body.a), parseFloat(req.body.b), parseInt(req.body.n));
+  res.send({ solution: solution });
 });
 
 const port = 3000;

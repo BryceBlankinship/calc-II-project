@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AppShell, Button, MantineProvider, Navbar, Header, MultiSelect, Text, TextInput, Image, NumberInput, Indicator, Card, Divider, ScrollArea } from '@mantine/core';
 import integral from './assets/integral.svg';
 import './app.css';
@@ -11,41 +11,67 @@ export default function App() {
         { label: 'Simpson Method', value: 2 },
     ]
 
-    const [name, setName] = useState('');
     const [method, setMethod] = useState();
     const [expression, setExpression] = useState('');
-    const [precision, setPrecision] = useState();
-    const [upperLimit, setUpperLimit] = useState();
-    const [lowerLimit, setLowerLimit] = useState();
+    const [precision, setPrecision] = useState('');
+    const [upperLimit, setUpperLimit] = useState('');
+    const [lowerLimit, setLowerLimit] = useState('');
     const [showWarning, setShowWarning] = useState(false);
+    const [showSimpsonWarning, setShowSimpsonWarning] = useState(false);
+    const [solution, setSolution] = useState('');
+
+    useEffect(() => {
+        if (method !== undefined) {
+            if (method[0] === 2) {
+                setShowSimpsonWarning(true);
+            } else {
+                setShowSimpsonWarning(false);
+            }
+        }
+    }, [method]);
 
     const handleMidpoint = async () => {
         const res = await axios.post('/midpoint', {
-            fx: 'sqrt(x)',
-            a: 3,
-            b: 6,
-            n: 4000
+            fx: expression.toString(),
+            a: lowerLimit,
+            b: upperLimit,
+            n: precision
         })
+
+        setSolution(res.data.solution);
     }
 
     const handleTrapezoid = async () => {
         const res = await axios.post('/trapezoid', {
-            fx: '5 + 5'
+            fx: expression.toString(),
+            a: lowerLimit,
+            b: upperLimit,
+            n: precision
         })
+
+        setSolution(res.data.solution);
     }
 
     const handleSimpson = async () => {
         const res = await axios.post('/simpson', {
-            fx: '5 + 5'
+            fx: expression.toString(),
+            a: lowerLimit,
+            b: upperLimit,
+            n: precision
         })
+
+        setSolution(res.data.solution);
     }
 
     const handleClick = () => {
-        if (method === 0) {
+        if (method == undefined) {
+            setShowWarning(true);
+            setTimeout(() => setShowWarning(false), 5000);
+        } else if (method[0] === 0) {
             handleMidpoint();
-        } else if (method === 1) {
+        } else if (method[0] === 1) {
             handleTrapezoid();
-        } else if (method === 2) {
+        } else if (method[0] === 2) {
             handleSimpson();
         } else {
             setShowWarning(true);
@@ -77,13 +103,16 @@ export default function App() {
 
                         <TextInput w={250} placeholder='Expression (ex: sqrt(x^2+1)' value={expression} onChange={e => setExpression(e.currentTarget.value)} />
 
-                        <NumberInput w={250} placeholder='Precision (n)' value={precision} onChange={e => setPrecision(e.currentTarget.value)} />
+                        <NumberInput w={250} placeholder='Precision (n)' value={precision} onChange={setPrecision} />
                         <Button onClick={handleClick}>Submit</Button>
                     </div>
 
                 </div>
                 {showWarning && <Text style={{ marginTop: 30 }} weight={'bold'} align='center' color='red'>You forgot to enter an integration method!</Text>}
 
+                {showSimpsonWarning && <Text style={{ marginTop: 30 }} weight={'bold'} align='center' color='red'>Remember: n must be even!</Text>}
+
+                {solution && <Text style={{ marginTop: 30 }} c={'green'} weight={'bold'} align='center'>Solution: {solution}</Text>}
             </AppShell>
 
         </MantineProvider>

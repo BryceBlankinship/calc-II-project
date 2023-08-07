@@ -27,15 +27,63 @@ function calculateMidpoint(fx, a, b, n) {
         area += parser.evaluate(fx);
     }
 
+    console.log(area * deltaX)
     return area * deltaX;
 }
 
 function calculateTrapezoid(fx, a, b, n) {
+    const deltaX = (b - a) / n;
 
+    let area = 0;
+    for (let i = a; i <= b; i += deltaX) {
+        parser.set('x', i);
+
+        console.log(i)
+        if (i == a || i == b) {
+            console.log('test')
+            // first and last are just f(x)
+            area += parser.evaluate(fx);
+        } else {
+            // everything in between is 2*f(x)
+            area += (2 * parser.evaluate(fx));
+        }
+
+        console.log(area * deltaX / 2)
+    }
+
+    console.log(area * (deltaX / 2));
+    return area * (deltaX / 2);
 }
 
 function calculateSimpson(fx, a, b, n) {
+    const deltaX = (b - a) / n;
 
+    let area = 0;
+    let count = 0;
+    for (let i = a; i <= b; i += deltaX) {
+        parser.set('x', i);
+
+        /** 
+         * Since i isn't the index of the sequence,
+         * I have to use a counter and check if thats even
+         * theres probably a better way but i've already spent too much time on this :|
+         */
+
+        if (i == a || i == b) {
+            // first and last are just f(x)
+            area += parser.evaluate(fx);
+        } else if (count % 2 == 1) {
+            // modulus checks if number is even, if it is then its times 4
+            area += (4 * parser.evaluate(fx));
+        } else {
+            // otherwise it must be odd (and not first), so times 2
+            area += (2 * parser.evaluate(fx))
+        }
+
+        count++;
+    }
+
+    return area * (deltaX / 3);
 }
 
 module.exports = {
