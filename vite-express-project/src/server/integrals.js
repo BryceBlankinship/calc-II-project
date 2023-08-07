@@ -27,7 +27,6 @@ function calculateMidpoint(fx, a, b, n) {
         area += parser.evaluate(fx);
     }
 
-    console.log(area * deltaX)
     return area * deltaX;
 }
 
@@ -38,20 +37,15 @@ function calculateTrapezoid(fx, a, b, n) {
     for (let i = a; i <= b; i += deltaX) {
         parser.set('x', i);
 
-        console.log(i)
         if (i == a || i == b) {
-            console.log('test')
             // first and last are just f(x)
             area += parser.evaluate(fx);
         } else {
             // everything in between is 2*f(x)
             area += (2 * parser.evaluate(fx));
         }
-
-        console.log(area * deltaX / 2)
     }
 
-    console.log(area * (deltaX / 2));
     return area * (deltaX / 2);
 }
 
